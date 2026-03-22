@@ -1,0 +1,10 @@
+clusters:
+- name: code&build-k8s
+  region: nbg1
+  k3s_version: v1.32.0+k3s1
+  control_plane:
+    type: cx22
+    count: 1
+  worker_nodes:
+    type: cx22
+    count: 3

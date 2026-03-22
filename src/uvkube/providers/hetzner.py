@@ -19,10 +19,7 @@ class HetznerProvider:
     def __init__(self, token: str | None = None) -> None:
         api_token = token or os.getenv("HETZNER_API_TOKEN")
         if not api_token:
-            raise ValueError(
-                "Hetzner API token is required. "
-                "Set it via the HETZNER_API_TOKEN environment variable."
-            )
+            raise ValueError("Hetzner API token is required. Set it via the HETZNER_API_TOKEN environment variable.")
         self.client = Client(token=api_token)
 
     @staticmethod
@@ -53,9 +50,7 @@ class HetznerProvider:
         """Get an existing server by name or create a new one if it doesn't exist."""
         existing_server = self.client.servers.get_by_name(name)
         if existing_server:
-            console.print(
-                f"Server '{name}' already exists. Reusing it.", style="yellow"
-            )
+            console.print(f"Server '{name}' already exists. Reusing it.", style="yellow")
             return self._to_server_node(existing_server), False
 
         response = self.client.servers.create(
@@ -84,9 +79,7 @@ class HetznerProvider:
         """Delete server by name. Returns True if deleted, False if not found."""
         server = self.client.servers.get_by_name(name)
         if not server:
-            console.print(
-                f"Server '{name}' not found. Nothing to delete.", style="yellow"
-            )
+            console.print(f"Server '{name}' not found. Nothing to delete.", style="yellow")
             return False
         self.client.servers.delete(server)
         console.print(f"Deleted server '{name}'.", style="red")

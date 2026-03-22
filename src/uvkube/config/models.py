@@ -45,5 +45,9 @@ class UvKubeConfig(BaseModel):
         return cls(**data)
 
     def to_yaml(self) -> str:
-        result = yaml.dump(self.model_dump(), default_flow_style=False, sort_keys=False)
+        result = yaml.dump(
+            self.model_dump(mode="json"),
+            default_flow_style=False,
+            sort_keys=False,
+        )
         return str(result)

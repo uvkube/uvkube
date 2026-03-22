@@ -33,11 +33,7 @@ class InMemoryCloudProvider:
             return list(self._servers.values())
 
         key, value = label_selector.split("=")
-        return [
-            server
-            for server in self._servers.values()
-            if server.labels.get(key) == value
-        ]
+        return [server for server in self._servers.values() if server.labels.get(key) == value]
 
     def delete_server(self, name: str) -> bool:
         if name not in self._servers:
