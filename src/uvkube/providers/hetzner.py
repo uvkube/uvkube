@@ -7,8 +7,11 @@ from hcloud import Client
 from hcloud.images import Image
 from hcloud.locations import Location
 from hcloud.server_types import ServerType
-from hcloud.servers import BoundServer, Server
+from hcloud.servers import BoundServer
 from rich.console import Console
+
+from uvkube.providers.base import ServerNode
+from uvkube.providers.enums import ServerStatus
 
 console = Console()
 
@@ -19,37 +22,49 @@ class HetznerProvider:
             raise ValueError("Hetzner API token is required. Set it via the HETZNER_API_TOKEN environment variable.")
         self.client = Client(token=api_token)
 
+    @staticmethod
+    def _to_server_node(server: BoundServer) -> ServerNode:
+        return ServerNode(
+            name=server.name,
+            ip=server.public_net.ipv4.ip,
+            status=ServerStatus(server.status),
+            location=server.location.name,
+            server_type=server.server_type.name,
+            labels=server.labels,
+        )
+
     def get_or_create_server(
             self,
             name: str,
             server_type: str,
+            location: str,
             image: str = "ubuntu-22.04",
             labels: Optional[dict[str, str]] = None,
-    ) -> tuple[Server, bool]:
-        """Get existing server by name or create a new one if it doesn't exist."""
+    ) -> tuple[ServerNode, bool]:
+        """Get an existing server by name or create a new one if it doesn't exist."""
         existing_server = self.client.servers.get_by_name(name)
         if existing_server:
             console.print(f"Server '{name}' already exists. Reusing it.", style="yellow")
-            return existing_server, False
+            return self._to_server_node(existing_server), False
         
         response = self.client.servers.create(
             name=name,
             server_type=ServerType(name=server_type),
             image=Image(name=image),
+            location=Location(name=location),
             labels=labels or {},
         )
         server = response.server
         console.print(f"Creating server '{name}' with type '{server_type}' and image '{image}'.", style="green")
-        return server, True
+        return self._to_server_node(server), True
   
-    def list_serrvers(
+    def list_servers(
           self,
           label_selector: Optional[str] = None,
-    ) -> list[BoundServer]:
+    ) -> list[ServerNode]:
           """List servers, optionally filtering by label selector."""
-          if label_selector:
-              return self.client.servers.get_all(label_selector=label_selector)
-          return self.client.servers.get_all()
+          servers = self.client.servers.get_all(label_selector=label_selector)
+          return [self._to_server_node(server) for server in servers]
     
     def delete_server(self, name: str) -> bool:
         """Delete server by name. Returns True if deleted, False if not found."""
@@ -61,6 +76,9 @@ class HetznerProvider:
         console.print(f"Deleted server '{name}'.", style="red")
         return True
     
-    def get_server(self, name: str) -> Optional[BoundServer]:
+    def get_server(self, name: str) -> Optional[ServerNode]:
         """Get server by name. Returns None if not found."""
-        return self.client.servers.get_by_name(name)
+        server = self.client.servers.get_by_name(name)
+        if not server:
+            return None
+        return self._to_server_node(server)
