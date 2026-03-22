@@ -16,18 +16,18 @@ class Region(StrEnum):
 
 
 class ControlPlaneConfig(BaseModel):
-    type: str = "cx22"
+    type: str = "cx23"
     count: int = 1
 
 
 class WorkerNodeConfig(BaseModel):
-    type: str = "cx22"
+    type: str = "cx23"
     count: int = 2
 
 
 class ClusterConfig(BaseModel):
     name: str
-    region: Region = Region.NUREMBERG
+    region: Region = Region.FALKENSTEIN
     k3s_version: str = "v1.32.0+k3s1"
     control_plane: ControlPlaneConfig = Field(default_factory=ControlPlaneConfig)
     worker_nodes: WorkerNodeConfig = Field(default_factory=WorkerNodeConfig)

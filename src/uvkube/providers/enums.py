@@ -2,6 +2,7 @@ from enum import StrEnum
 
 
 class ServerStatus(StrEnum):
+    INITIALIZING = "initializing"
     RUNNING = "running"
     STOPPED = "stopped"
     STARTING = "starting"

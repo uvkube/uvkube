@@ -197,3 +197,12 @@ def destroy(
             provider.delete_server(server.name)
 
         console.print(Panel.fit("[red]✓[/red] Cluster destroyed.", border_style="red"))
+
+@app.command()
+def server_types() -> None:
+    """List available server types."""
+    from uvkube.providers.hetzner import HetznerProvider
+    provider = HetznerProvider()
+    types = provider.client.server_types.get_all()
+    for t in types:
+        console.print(f"[cyan]{t.name}[/cyan] — {t.description} — cores: {t.cores} ram: {t.memory}GB")

@@ -24,16 +24,20 @@ class HetznerProvider:
 
     @staticmethod
     def _to_server_node(server: BoundServer) -> ServerNode:
-
         public_net = server.public_net
         ip = public_net.ipv4.ip if public_net and public_net.ipv4 else ""
         location = server.location.name if server.location else ""
         server_type = server.server_type.name if server.server_type else ""
 
+        try:
+            status = ServerStatus(server.status)
+        except ValueError:
+            status = ServerStatus.UNKNOWN
+
         return ServerNode(
             name=server.name,
             ip=ip,
-            status=ServerStatus(server.status),
+            status=status,
             location=location,
             server_type=server_type,
             labels=server.labels,
