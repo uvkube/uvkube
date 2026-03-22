@@ -7,4 +7,4 @@ clusters:
     count: 1
   worker_nodes:
     type: cx23
-    count: 1
+    count: 3
