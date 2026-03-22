@@ -10,24 +10,29 @@ def test_default_region_is_nuremberg() -> None:
     cluster = ClusterConfig(name="test-cluster")
     assert cluster.region == Region.NUREMBERG
 
+
 def test_invalid_region_raises_error() -> None:
     with pytest.raises(ValueError):
-        ClusterConfig(name="test-cluster", region="invalid-region") # type: ignore
+        ClusterConfig(name="test-cluster", region="invalid-region")  # type: ignore
 
 
 def test_config_from_file(tmp_path: Path) -> None:
     config_file = tmp_path / "config.yaml"
-    config_file.write_text(yaml.dump({
-        "clusters": [
+    config_file.write_text(
+        yaml.dump(
             {
-                "name": "test-cluster",
-                "region": "hel1",
-                "k3s_version": "v1.32.0+k3s1",
-                "control_plane": {"type": "cx22", "count": 1},
-                "worker_nodes": {"type": "cx22", "count": 2},
+                "clusters": [
+                    {
+                        "name": "test-cluster",
+                        "region": "hel1",
+                        "k3s_version": "v1.32.0+k3s1",
+                        "control_plane": {"type": "cx22", "count": 1},
+                        "worker_nodes": {"type": "cx22", "count": 2},
+                    }
+                ]
             }
-        ]
-    }))
+        )
+    )
 
     config = UvKubeConfig.from_file(config_file)
 

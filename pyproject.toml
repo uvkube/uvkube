@@ -35,9 +35,19 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+ignore = ["UP042"]
+
+[tool.taskipy.tasks]
+test = "uv run pytest tests/ -v"
+lint = "uv run ruff check src/ tests/"
+format = "uv run ruff format src/ tests/"
+types = "uv run mypy src/"
+check = "task lint && task types && task test"
 
 [dependency-groups]
 dev = [
   "mypy>=1.19.1",
   "pytest>=9.0.2",
+  "taskipy>=1.14.1",
+  "types-pyyaml>=6.0.12.20250915",
 ]

@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
-class ServerStatus(str, Enum):
+
+class ServerStatus(StrEnum):
     RUNNING = "running"
     STOPPED = "stopped"
     STARTING = "starting"
