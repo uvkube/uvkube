@@ -2,10 +2,8 @@ from uvkube.ansible.inventory import AnsibleInventory
 from uvkube.providers.base import ServerNode
 from uvkube.providers.enums import ServerStatus
 
-def make_node(
-        name: str,
-        ip: str
-) -> ServerNode:
+
+def make_node(name: str, ip: str) -> ServerNode:
     return ServerNode(
         name=name,
         ip=ip,
@@ -14,6 +12,7 @@ def make_node(
         server_type="cx23",
         labels={},
     )
+
 
 def test_inventory_renders_control_plane() -> None:
     inventory = AnsibleInventory(
@@ -26,6 +25,7 @@ def test_inventory_renders_control_plane() -> None:
     assert "[control_plane]" in result
     assert "test-cp-1 ansible_host=192.168.1.100" in result
 
+
 def test_inventory_renders_worker_nodes() -> None:
     inventory = AnsibleInventory(
         control_plane_nodes=[],
@@ -36,6 +36,7 @@ def test_inventory_renders_worker_nodes() -> None:
 
     assert "[workers]" in result
     assert "test-worker-1 ansible_host=192.168.2.100" in result
+
 
 def test_inventory_renders_k3s_children_group() -> None:
     inventory = AnsibleInventory(
@@ -49,7 +50,8 @@ def test_inventory_renders_k3s_children_group() -> None:
     assert "[control_plane]" in result
     assert "[workers]" in result
 
-def test_inventory_write(tmp_path)-> None:
+
+def test_inventory_write(tmp_path) -> None:
     inventory = AnsibleInventory(
         control_plane_nodes=[make_node("test-cp-1", "10.0.0.1")],
         worker_nodes=[make_node("test-worker-1", "10.0.0.2")],

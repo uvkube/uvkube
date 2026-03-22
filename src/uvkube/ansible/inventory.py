@@ -4,13 +4,14 @@ from pathlib import Path
 
 from uvkube.providers.base import ServerNode
 
+
 class AnsibleInventory:
     def __init__(
-            self,
-            control_plane_nodes: list[ServerNode],
-            worker_nodes: list[ServerNode],
-            ssh_user: str = "root",
-            ssh_private_key: str = "~/.ssh/id_rsa",
+        self,
+        control_plane_nodes: list[ServerNode],
+        worker_nodes: list[ServerNode],
+        ssh_user: str = "root",
+        ssh_private_key: str = "~/.ssh/id_rsa",
     ) -> None:
         self.control_plane_nodes = control_plane_nodes
         self.worker_nodes = worker_nodes
