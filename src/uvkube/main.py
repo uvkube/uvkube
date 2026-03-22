@@ -20,11 +20,5 @@ def main() -> None:
     pass
 
 
-@app.command()
-def hello() -> None:
-    """Say hello."""
-    console.print("Hello from Mundo!", style="bold green")
-
-
 if __name__ == "__main__":
     app()

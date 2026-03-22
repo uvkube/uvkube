@@ -24,7 +24,7 @@ class AnsibleInventory:
             lines.append(
                 f"{node.name} ansible_host={node.ip} "
                 f"ansible_user={self.ssh_user} "
-                f"ansible_private_key_file={self.ssh_private_key}"
+                f"ansible_ssh_private_key_file={self.ssh_private_key}"
             )
         lines.append("")
         lines.append("[workers]")
@@ -32,7 +32,7 @@ class AnsibleInventory:
             lines.append(
                 f"{node.name} ansible_host={node.ip} "
                 f"ansible_user={self.ssh_user} "
-                f"ansible_private_key_file={self.ssh_private_key}"
+                f"ansible_ssh_private_key_file={self.ssh_private_key}"
             )
         lines.append("")
 

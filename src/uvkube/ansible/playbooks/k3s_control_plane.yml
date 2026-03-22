@@ -1,0 +1,51 @@
+---
+- name: Install k3s control plane
+  hosts: control_plane
+  become: true
+
+  tasks:
+    - name: Wait for SSH to be ready
+      wait_for_connection:
+        delay: 5
+        timeout: 120
+
+    - name: update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install k3s
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" sh -s - server \
+          --disable traefik \
+          --node-name "{{ inventory_hostname }}"
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Wait for k3s to be ready
+      wait_for:
+        path: /etc/rancher/k3s/k3s.yaml
+        timeout: 60
+
+    - name: Fetch node token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: node_token
+
+    - name: Set node token fact
+      set_fact:
+        k3s_token: "{{ node_token.content | b64decode | trim }}"
+
+    - name: Fetch kubeconfig
+      fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ kubeconfig_path }}"
+        flat: true
+
+    - name: Replace localhost with control plane IP in kubeconfig
+      delegate_to: localhost
+      become: false
+      replace:
+        path: "{{ kubeconfig_path }}"
+        regexp: 'https://127\.0\.0\.1:6443'
+        replace: "https://{{ ansible_host }}:6443"

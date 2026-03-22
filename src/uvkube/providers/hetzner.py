@@ -7,6 +7,7 @@ from hcloud.images import Image
 from hcloud.locations import Location
 from hcloud.server_types import ServerType
 from hcloud.servers import BoundServer
+from hcloud.ssh_keys import SSHKey
 from rich.console import Console
 
 from uvkube.providers.base import ServerNode
@@ -50,6 +51,7 @@ class HetznerProvider:
         location: str,
         image: str = "ubuntu-22.04",
         labels: dict[str, str] | None = None,
+        ssh_key_name: str | None = None,
     ) -> tuple[ServerNode, bool]:
         """Get an existing server by name or create a new one if it doesn't exist."""
         existing_server = self.client.servers.get_by_name(name)
@@ -57,12 +59,17 @@ class HetznerProvider:
             console.print(f"Server '{name}' already exists. Reusing it.", style="yellow")
             return self._to_server_node(existing_server), False
 
+        ssh_keys = []
+        if ssh_key_name:
+            ssh_keys = [SSHKey(name=ssh_key_name)]
+
         response = self.client.servers.create(
             name=name,
             server_type=ServerType(name=server_type),
             image=Image(name=image),
             location=Location(name=location),
             labels=labels or {},
+            ssh_keys=ssh_keys,
         )
         server = response.server
         console.print(

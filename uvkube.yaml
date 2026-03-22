@@ -2,9 +2,10 @@ clusters:
 - name: uvkube-test
   region: nbg1
   k3s_version: v1.32.0+k3s1
+  ssh_key_name: Default Key
   control_plane:
     type: cx23
     count: 1
   worker_nodes:
     type: cx23
-    count: 3
+    count: 1
