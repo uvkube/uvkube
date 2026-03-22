@@ -317,6 +317,24 @@ def ssh_key_list() -> None:
 
     console.print(table)
 
+@app.command()
+def firewall(
+    config_path: Annotated[
+        Path, typer.Option("--config", "-c", help="Path to the config file")
+    ] = Path("uvkube.yaml"),
+) -> None:
+    """Create and apply Hetzner firewall rules for the cluster."""
+    from uvkube.providers.hetzner import HetznerProvider
+
+    config = UvKubeConfig.from_file(config_path)
+    provider = HetznerProvider()
+
+    for cluster in config.clusters:
+        created = provider.create_cluster_firewall(cluster.name)
+        if created:
+            console.print(f"[green]✓[/green] Firewall created and applied to [bold]{cluster.name}[/bold]")
+        else:
+            console.print(f"[yellow]Firewall already exists for cluster:[/yellow] {cluster.name}")
 
 def _run_bootstrap(
     cluster_name: str,

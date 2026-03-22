@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from hcloud import Client
+from hcloud.firewalls import FirewallResource, FirewallRule
 from hcloud.images import Image
 from hcloud.locations import Location
 from hcloud.server_types import ServerType
@@ -102,3 +103,30 @@ class HetznerProvider:
         if not server:
             return None
         return self._to_server_node(server)
+
+    def create_cluster_firewall(self, cluster_name: str) -> bool:
+        """Create and apply firewall for cluster. Returns True if created, False if exists."""
+        firewall_name = f"{cluster_name}-firewall"
+
+        existing = self.client.firewalls.get_by_name(firewall_name)
+        if existing:
+            return False
+
+        firewall = self.client.firewalls.create(
+            name=firewall_name,
+            rules=[
+                FirewallRule(direction="in", protocol="tcp", port="22", source_ips=["0.0.0.0/0", "::/0"]),
+                FirewallRule(direction="in", protocol="tcp", port="6443", source_ips=["0.0.0.0/0", "::/0"]),
+                FirewallRule(direction="in", protocol="tcp", port="30000-32767", source_ips=["0.0.0.0/0", "::/0"]),
+            ],
+        ).firewall
+
+        servers = self.list_servers(label_selector=f"uvkube-cluster={cluster_name}")
+        for server in servers:
+            hcloud_server = self.client.servers.get_by_name(server.name)
+            self.client.firewalls.apply_to_resources(
+                firewall,
+                [FirewallResource(type="server", server=hcloud_server)],
+            )
+
+        return True
