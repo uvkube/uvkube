@@ -1,0 +1,30 @@
+[project]
+dependencies = [
+  "hcloud>=2.17.0",
+  "paramiko>=4.0.0",
+  "pydantic>=2.12.5",
+  "python-dotenv>=1.2.2",
+  "pyyaml>=6.0.3",
+  "rich>=14.3.3",
+  "ruff>=0.15.7",
+  "typer>=0.24.1",
+]
+description = "Kubernetes infrastructure management for Hetzner Cloud"
+name = "uvkube"
+readme = "README.md"
+requires-python = ">=3.12"
+version = "0.1.0"
+
+[project.scripts]
+uvkube = "uvkube.main:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+  "pytest>=9.0.2",
+]
