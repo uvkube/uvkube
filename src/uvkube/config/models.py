@@ -27,7 +27,7 @@ class WorkerNodeConfig(BaseModel):
 
 class ClusterConfig(BaseModel):
     name: str
-    region: Region = Region.FALKENSTEIN
+    region: Region = Region.NUREMBERG
     k3s_version: str = "v1.32.0+k3s1"
     control_plane: ControlPlaneConfig = Field(default_factory=ControlPlaneConfig)
     worker_nodes: WorkerNodeConfig = Field(default_factory=WorkerNodeConfig)
