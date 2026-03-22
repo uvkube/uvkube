@@ -42,6 +42,7 @@ test = "uv run pytest tests/ -v"
 lint = "uv run ruff check src/ tests/"
 format = "uv run ruff format src/ tests/"
 types = "uv run mypy src/"
+upgrade = "uv run ruff check src/ tests/ --fix --unsafe-fixes"
 check = "task lint && task types && task test"
 
 [dependency-groups]
